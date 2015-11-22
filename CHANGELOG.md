@@ -1,6 +1,10 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.5.0 (unreleased)
+
+* Add UDP support to GELF output. (#59)
+
 ## v0.4.2 (2016-01-04)
 
 * Fix concurrency issue in MessageBuilder/MessageFields.

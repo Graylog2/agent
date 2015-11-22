@@ -52,23 +52,34 @@ public class GelfOutput extends OutputService {
 
     @Override
     protected void doStart() {
-        final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort())
-                .transport(GelfTransports.TCP)
-                .queueSize(configuration.getClientQueueSize())
-                .connectTimeout(configuration.getClientConnectTimeout())
-                .reconnectDelay(configuration.getClientReconnectDelay())
-                .tcpNoDelay(configuration.isClientTcpNoDelay())
-                .sendBufferSize(configuration.getClientSendBufferSize());
+        final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort());
 
-        if (configuration.isClientTls()) {
-            clientConfig.enableTls();
-            clientConfig.tlsTrustCertChainFile(configuration.getClientTlsCertChainFile());
+        switch (configuration.getProtocol()) {
+            case UDP:
+                clientConfig
+                        .transport(GelfTransports.UDP)
+                        .queueSize(configuration.getClientQueueSize())
+                        .sendBufferSize(configuration.getClientSendBufferSize());
+            case TCP:
+                clientConfig
+                        .transport(GelfTransports.TCP)
+                        .queueSize(configuration.getClientQueueSize())
+                        .connectTimeout(configuration.getClientConnectTimeout())
+                        .reconnectDelay(configuration.getClientReconnectDelay())
+                        .tcpNoDelay(configuration.isClientTcpNoDelay())
+                        .sendBufferSize(configuration.getClientSendBufferSize());
 
-            if (configuration.isClientTlsVerifyCert()) {
-                clientConfig.enableTlsCertVerification();
-            } else {
-                clientConfig.disableTlsCertVerification();
-            }
+                if (configuration.isClientTls()) {
+                    clientConfig.enableTls();
+                    clientConfig.tlsTrustCertChainFile(configuration.getClientTlsCertChainFile());
+
+                    if (configuration.isClientTlsVerifyCert()) {
+                        clientConfig.enableTlsCertVerification();
+                    } else {
+                        clientConfig.disableTlsCertVerification();
+                    }
+                }
+                break;
         }
 
         LOG.info("Starting GELF transport: {}", clientConfig);

@@ -20,6 +20,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.outputs.OutputConfiguration;
+import org.graylog2.gelfclient.GelfTransports;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class GelfOutputConfiguration extends OutputConfiguration {
@@ -37,6 +39,9 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         @Override
         GelfOutputConfiguration create(String id, Config config);
     }
+
+    @NotNull
+    private GelfTransports protocol = GelfTransports.TCP;
 
     @NotBlank
     private String host;
@@ -79,6 +84,17 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         super(id, config);
         this.outputFactory = outputFactory;
 
+        if (config.hasPath("protocol")) {
+            switch (config.getString("protocol").toUpperCase(Locale.ENGLISH)) {
+                case "UDP":
+                    this.protocol = GelfTransports.UDP;
+                    break;
+                case "TCP":
+                default:
+                    this.protocol = GelfTransports.TCP;
+                    break;
+            }
+        }
         if (config.hasPath("host")) {
             this.host = config.getString("host");
         }
@@ -114,6 +130,10 @@ public class GelfOutputConfiguration extends OutputConfiguration {
     @Override
     public GelfOutput createOutput() {
         return outputFactory.create(this);
+    }
+
+    public GelfTransports getProtocol() {
+        return protocol;
     }
 
     public String getHost() {

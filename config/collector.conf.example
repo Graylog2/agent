@@ -57,6 +57,17 @@ collector-id = "file:config/collector-id"
 //    client-send-buffer-size = 32768
 //  }
 //
+//  // GELF output to send messages to a Graylog server using UDP.
+//  // NOTE: GELF via UDP *does not* support TLS, so the connection will be unencrypted!
+//  gelf-udp {
+//    type = "gelf"
+//    protocol = "UDP"
+//    host = "127.0.0.1"
+//    port = 12201
+//    client-queue-size = 512
+//    client-send-buffer-size = 32768
+//  }
+//
 //  // Prints all messages to STDOUT. Useful for debugging. Do not enable in production usage!
 //  console {
 //    type = "stdout"
