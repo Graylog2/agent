@@ -33,7 +33,7 @@ SET SERVICE_NAME=%1
 FOR %%D in ("%COLLECTOR_BIN_DIR%..") DO SET COLLECTOR_ROOT=%%~dpfD
 
 :: Detect if we are running on 32bit or 64bit Windows.
-"%JAVA_HOME%\bin\java" -version 2>&1 | "%windir%\System32\find" "64-Bit" >nul:
+"%JAVA_HOME%\bin\java.exe" -d32 -version 2>&1 | "%windir%\System32\find" "does not support" >nul:
 IF errorlevel 1 (SET ARCH=x86) ELSE (SET ARCH=x64)
 
 :: Use the correct executable based on the architecture.
@@ -65,6 +65,8 @@ ECHO ARCH:         "%ARCH%"
 ECHO.
 
 :: Select the correct JVM DLL.
+SET JVM_DLL=%JAVA_HOME%\jre\bin\default\jvm.dll
+IF EXIST "%JVM_DLL%" GOTO actionInstall
 SET JVM_DLL=%JAVA_HOME%\jre\bin\server\jvm.dll
 IF EXIST "%JVM_DLL%" GOTO actionInstall
 SET JVM_DLL=%JAVA_HOME%\bin\server\jvm.dll
