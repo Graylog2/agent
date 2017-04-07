@@ -18,8 +18,8 @@ COLLECTOR_DEFAULT_JAR="$COLLECTOR_ROOT/graylog-collector.jar"
 
 COLLECTOR_JAVA_DEFAULT_OPTS="${collector.jvm-opts} -Djava.library.path=$COLLECTOR_ROOT/lib/sigar"
 
-if [ -f "${collector.script-config}" ]; then
-    . "${collector.script-config}"
+if [ -f "$COLLECTOR_ROOT/bin/graylog-collector-script-config.sh" ]; then
+    . "$COLLECTOR_ROOT/bin/graylog-collector-script-config.sh"
 fi
 
 COLLECTOR_JAR=${COLLECTOR_JAR:="$COLLECTOR_DEFAULT_JAR"}
@@ -32,13 +32,10 @@ die() {
     exit 1
 }
 
-if [ -n "$JAVA_HOME" ]; then
-    # Try to use $JAVA_HOME
-    if [ -x "$JAVA_HOME"/bin/java ]; then
-        COLLECTOR_JAVA_CMD="$JAVA_HOME"/bin/java
-    else
-        die "$JAVA_HOME"/bin/java is not executable
-    fi
+if [ -x `which java` ]; then
+    COLLECTOR_JAVA_CMD=`which java`
+else
+    die "java cannot be found."
 fi
 
 exec $COLLECTOR_JAVA_CMD $COLLECTOR_JAVA_OPTS -jar $COLLECTOR_JAR "$@"
